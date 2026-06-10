@@ -1,0 +1,754 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Happy Birthday Sayang!</title>
+    
+    <!-- Google Fonts -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Caveat:wght@400;600;700&family=Poppins:wght@300;400;500;600&display=swap" rel="stylesheet">
+    
+    <!-- Canvas Confetti Library -->
+    <script src="https://cdn.jsdelivr.net/npm/canvas-confetti@1.6.0/dist/confetti.browser.min.js"></script>
+
+    <style>
+        /* === CSS VARIABLES === */
+        :root {
+            --pink-soft: #ffe6ea;
+            --pink-dark: #ffb6c1;
+            --cream: #fffdd0;
+            --white: #ffffff;
+            --gold: #d4af37;
+            --text-main: #5c4b51;
+            --text-light: #8c7b81;
+            --glass-bg: rgba(255, 255, 255, 0.55);
+            --glass-border: rgba(255, 255, 255, 0.8);
+            --shadow: 0 8px 32px 0 rgba(255, 182, 193, 0.2);
+            --font-main: 'Poppins', sans-serif;
+            --font-script: 'Caveat', cursive;
+        }
+
+        /* === GLOBAL STYLES === */
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: var(--font-main);
+            color: var(--text-main);
+            background: linear-gradient(135deg, #fdfbfb 0%, var(--pink-soft) 100%);
+            min-height: 100vh;
+            overflow-x: hidden;
+            position: relative;
+            scroll-behavior: smooth;
+        }
+
+        /* Floating Background Elements */
+        #background-elements {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100vw;
+            height: 100vh;
+            pointer-events: none;
+            z-index: -1;
+            overflow: hidden;
+        }
+
+        .floating-item {
+            position: absolute;
+            opacity: 0.5;
+            animation: floatUp linear infinite;
+        }
+
+        @keyframes floatUp {
+            0% { transform: translateY(100vh) rotate(0deg) scale(0.8); opacity: 0; }
+            20% { opacity: 0.6; }
+            80% { opacity: 0.6; }
+            100% { transform: translateY(-20vh) rotate(360deg) scale(1.2); opacity: 0; }
+        }
+
+        /* Container */
+        .container {
+            max-width: 800px;
+            margin: 0 auto;
+            padding: 20px;
+        }
+
+        section {
+            min-height: 100vh;
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            align-items: center;
+            text-align: center;
+            padding: 40px 20px;
+            opacity: 0;
+            transform: translateY(30px);
+            transition: all 1s ease-in-out;
+        }
+
+        section.visible {
+            opacity: 1;
+            transform: translateY(0);
+        }
+
+        /* === COMPONENTS === */
+        /* Buttons */
+        .btn {
+            background: var(--white);
+            color: var(--text-main);
+            border: 2px solid var(--pink-dark);
+            padding: 12px 30px;
+            border-radius: 50px;
+            font-family: var(--font-main);
+            font-size: 1.1rem;
+            font-weight: 500;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            box-shadow: var(--shadow);
+            margin-top: 20px;
+            text-decoration: none;
+            display: inline-block;
+        }
+
+        .btn:hover {
+            background: var(--pink-dark);
+            color: var(--white);
+            transform: translateY(-3px);
+            box-shadow: 0 10px 20px rgba(255, 182, 193, 0.4);
+        }
+
+        /* Audio Control */
+        .audio-control {
+            position: fixed;
+            bottom: 20px;
+            right: 20px;
+            z-index: 100;
+            background: var(--glass-bg);
+            backdrop-filter: blur(8px);
+            border: 1px solid var(--glass-border);
+            padding: 10px 20px;
+            border-radius: 50px;
+            cursor: pointer;
+            box-shadow: var(--shadow);
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            font-family: var(--font-main);
+            font-size: 0.9rem;
+            color: var(--text-main);
+            transition: all 0.3s ease;
+        }
+
+        .audio-control:hover {
+            background: var(--white);
+            transform: scale(1.05);
+        }
+
+        /* Glass Card */
+        .glass-card {
+            background: var(--glass-bg);
+            backdrop-filter: blur(12px);
+            border: 1px solid var(--glass-border);
+            border-radius: 20px;
+            padding: 40px;
+            box-shadow: var(--shadow);
+            width: 100%;
+            max-width: 600px;
+        }
+
+        /* === SECTIONS === */
+        /* Hero */
+        #hero h1 {
+            font-family: var(--font-script);
+            font-size: 4.5rem;
+            color: var(--text-main);
+            margin-bottom: 4px;
+            text-shadow: 2px 2px 4px rgba(255, 255, 255, 0.8);
+        }
+
+        #hero-name {
+            font-family: var(--font-script);
+            font-size: 2.7rem;
+            font-weight: 600;
+            color: var(--text-main);
+            margin-bottom: 10px;
+            text-shadow: 2px 2px 4px rgba(255, 255, 255, 0.8);
+        }
+
+        #hero p {
+            font-size: 1.2rem;
+            color: var(--text-light);
+            margin-bottom: 30px;
+        }
+
+        /* Message */
+        #message-text {
+            font-size: 1.2rem;
+            line-height: 1.8;
+            min-height: 150px;
+        }
+
+        #scroll-hint {
+            margin-top: 18px;
+            font-family: var(--font-script);
+            font-size: 1.7rem;
+            line-height: 1.2;
+            color: var(--text-light);
+            opacity: 0;
+            visibility: hidden;
+            transform: translateY(8px);
+            transition: opacity 0.6s ease, transform 0.6s ease, visibility 0.6s ease;
+        }
+
+        #scroll-hint.show {
+            opacity: 0.9;
+            visibility: visible;
+            transform: translateY(0);
+        }
+
+        .cursor {
+            display: inline-block;
+            width: 2px;
+            background-color: var(--text-main);
+            animation: blink 1s infinite;
+        }
+
+        @keyframes blink {
+            0%, 100% { opacity: 1; }
+            50% { opacity: 0; }
+        }
+
+        /* Gallery */
+        .gallery-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
+            gap: 30px;
+            width: 100%;
+            margin-top: 30px;
+        }
+
+        .polaroid {
+            background: var(--white);
+            padding: 15px 15px 20px 15px;
+            border-radius: 5px;
+            box-shadow: 0 4px 15px rgba(0,0,0,0.1);
+            position: relative;
+            transition: transform 0.3s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+            cursor: pointer;
+            display: flex;
+            flex-direction: column;
+            gap: 14px;
+            overflow: hidden;
+        }
+
+        .polaroid:nth-child(even) {
+            transform: rotate(3deg);
+        }
+
+        .polaroid:nth-child(odd) {
+            transform: rotate(-3deg);
+        }
+
+        .polaroid:hover {
+            transform: scale(1.05) rotate(0deg);
+            z-index: 10;
+        }
+
+        .polaroid img {
+            width: 100%;
+            height: auto;
+            max-height: 420px;
+            object-fit: contain;
+            border-radius: 3px;
+            background-color: #f0f0f0;
+            display: block;
+        }
+
+        .polaroid-caption {
+            font-family: var(--font-script);
+            font-size: clamp(1.25rem, 4.8vw, 1.8rem);
+            line-height: 1.15;
+            color: var(--text-main);
+            position: static;
+            width: 100%;
+            text-align: center;
+            word-break: break-word;
+            padding: 0 4px;
+        }
+
+        .fallback-img {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            min-height: 250px;
+            background-color: #e0e0e0;
+            color: var(--text-light);
+            font-style: italic;
+            border-radius: 3px;
+        }
+
+        /* Letter */
+        #letter {
+            text-align: center;
+        }
+
+        /* Ending */
+        #ending-title {
+            font-family: var(--font-script);
+            font-size: 4rem;
+            color: var(--text-main);
+            margin-bottom: 10px;
+        }
+
+        #surprise-text {
+            display: none;
+            font-family: var(--font-script);
+            font-size: 2.5rem;
+            color: var(--pink-dark);
+            margin-top: 30px;
+            animation: fadeIn 1s ease-in;
+        }
+
+        @keyframes fadeIn {
+            from { opacity: 0; transform: translateY(10px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+
+        /* === MODALS === */
+        .modal {
+            display: none;
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100vw;
+            height: 100vh;
+            background: rgba(0, 0, 0, 0.7);
+            z-index: 1000;
+            justify-content: center;
+            align-items: center;
+            padding: 20px;
+            opacity: 0;
+            transition: opacity 0.3s ease;
+        }
+
+        .modal.show {
+            display: flex;
+            opacity: 1;
+        }
+
+        .modal-content {
+            background: var(--white);
+            padding: 30px;
+            border-radius: 15px;
+            max-width: 500px;
+            width: 100%;
+            position: relative;
+            transform: scale(0.8);
+            transition: transform 0.3s ease;
+            box-shadow: 0 10px 40px rgba(0,0,0,0.2);
+        }
+
+        .modal.show .modal-content {
+            transform: scale(1);
+        }
+
+        .close-btn {
+            position: absolute;
+            top: 15px;
+            right: 20px;
+            font-size: 1.5rem;
+            cursor: pointer;
+            color: var(--text-light);
+            transition: color 0.3s ease;
+        }
+
+        .close-btn:hover {
+            color: var(--pink-dark);
+        }
+
+        /* Photo Modal Specific */
+        #photo-modal-img {
+            width: 100%;
+            max-height: 70vh;
+            object-fit: contain;
+            border-radius: 8px;
+        }
+
+        /* Letter Modal Specific */
+        .letter-paper {
+            background: var(--cream);
+            padding: 40px 30px;
+            border-radius: 5px;
+            font-family: var(--font-script);
+            font-size: 1.5rem;
+            line-height: 1.6;
+            color: var(--text-main);
+            box-shadow: inset 0 0 15px rgba(0,0,0,0.05);
+            background-image: repeating-linear-gradient(transparent, transparent 31px, rgba(0,0,0,0.1) 31px, rgba(0,0,0,0.1) 32px);
+            white-space: pre-wrap; /* Keeps line breaks */
+        }
+
+        /* Responsive */
+        @media (max-width: 600px) {
+            #hero h1 { font-size: 3.5rem; }
+            #hero-name { font-size: 2.35rem; }
+            .glass-card { padding: 25px; }
+            #ending-title { font-size: 3rem; }
+            .gallery-grid {
+                grid-template-columns: 1fr;
+                gap: 26px;
+            }
+            .polaroid {
+                margin: 0 auto;
+                width: 92%;
+                max-width: 360px;
+                transform: rotate(0deg) !important;
+            }
+            .polaroid img {
+                max-height: none;
+            }
+            .polaroid-caption {
+                font-size: clamp(1.35rem, 7vw, 2rem);
+            }
+        }
+    </style>
+</head>
+<body>
+
+    <!-- Background Elements -->
+    <div id="background-elements"></div>
+
+    <!-- Audio Control -->
+    <div class="audio-control" id="audio-toggle">
+        <span id="audio-icon">🎵</span>
+        <span id="audio-text">Mainkan musyiikk</span>
+    </div>
+    <!-- Audio Element (Hidden) -->
+    <audio id="bg-music" loop>
+        <source src="" type="audio/flac">
+        <source src="" type="audio/mpeg">
+        Browser kamu tidak mendukung elemen audio.
+    </audio>
+
+    <div class="container">
+        <!-- Section 1: Hero / Opening -->
+        <section id="hero" class="visible">
+            <h1 id="hero-title"></h1>
+            <div id="hero-name">Annisa Rahma</div>
+            <p id="hero-subtitle"></p>
+            <button class="btn" id="btn-open"></button>
+        </section>
+
+        <!-- Section 2: Typewriter Message -->
+        <section id="message">
+            <div class="glass-card">
+                <p><span id="message-text"></span><span class="cursor">&nbsp;</span></p>
+            </div>
+            <p id="scroll-hint">(scroll ke bawah dikit seng pelan pelan)</p>
+        </section>
+
+        <!-- Section 3: Gallery -->
+        <section id="gallery">
+            <h2 style="font-family: var(--font-script); font-size: 3rem; margin-bottom: 20px;">Beberapa Momen Favorit</h2>
+            <div class="gallery-grid" id="gallery-container">
+                <!-- Polaroid items will be injected here via JS -->
+            </div>
+        </section>
+
+        <!-- Section 4: Secret Letter -->
+        <section id="letter">
+            <div class="glass-card" style="text-align: center;">
+                <h2 style="font-family: var(--font-main); margin-bottom: 20px; font-weight: 500;">Ada Sesuatu Buat Kamu...</h2>
+                <button class="btn" id="btn-letter">Baca Surat Kecil Dari Aku 💌</button>
+            </div>
+        </section>
+
+        <!-- Section 5: Ending -->
+        <section id="ending">
+            <h1 id="ending-title"></h1>
+            <p id="ending-subtitle" style="font-size: 1.2rem; color: var(--text-light); margin-bottom: 30px;"></p>
+            <button class="btn" id="btn-surprise"></button>
+            <div id="surprise-text"></div>
+        </section>
+    </div>
+
+    <!-- MODAL: Photo Lightbox -->
+    <div class="modal" id="modal-photo">
+        <div class="modal-content" style="background: transparent; box-shadow: none;">
+            <span class="close-btn" style="color: white; right: 0; top: -30px;">&times;</span>
+            <img id="photo-modal-img" src="" alt="Kenangan Kita">
+        </div>
+    </div>
+
+    <!-- MODAL: Secret Letter -->
+    <div class="modal" id="modal-letter">
+        <div class="modal-content">
+            <span class="close-btn">&times;</span>
+            <div class="letter-paper" id="letter-content"></div>
+        </div>
+    </div>
+
+    <!-- === JAVASCRIPT === -->
+    <script>
+        /**
+         * ==========================================
+         * BAGIAN KONFIGURASI (SILAKAN DIEDIT DI SINI)
+         * ==========================================
+         */
+        const CONFIG = {
+            hero: {
+                title: "For My Pacar Gweh",
+                subtitle: "Ada hadiah kecil buat kamu hari ini...",
+                btnText: "Buka Sekarang 🎁🤩"
+            },
+            message: "Habede sayanggggg, aku gatau mau ngomong apa soalnya lagi lapar. Semoga di umur baru ini kamu makin bahagia, makin kuat, makin sayang sama diri sendiri, dan semua hal baik yang kamu impikan pelan pelan datang satu per satu. Dan semoga kamu tetap jadi Nisa yang aku kenal",
+            gallery: [
+                { src: "Foto1.png", caption: "Foto favorite" },
+                { src: "Foto2.png", caption: "Ini juga favorite" },
+                { src: "Foto3.jpg", caption: "Lagi lagi juga favorite" },
+                { src: "Foto4.jpg", caption: "Pokonya favorite semua dah" },
+                { src: "Foto5.jpg", caption: "Inipun juga" },
+                { src: "Foto6.jpg", caption: "Ini nemu di gallery, keren ajasih awoakwoak" }
+            ],
+            letter: "Hai, ini juga gatau sih mau ngomong apa. Seng hari minggu main yok, kamu bisa ga. Oiya aku kan mau hadiahin hamster jir kok kamu gamau sik\n\nIntinya i love u sangat dah",
+            ending: {
+                title: "Happy Birthday, Sayang 🎂",
+                subtitle: "Semoga hari ini dan besok indah seindah senyum kamu.",
+                btnText: "Klik untuk kejutan kecil",
+                surpriseText: "I love you more than words can say."
+            },
+            // Masukkan nama file lagu kamu di sini. Pastikan file berada di folder yang sama.
+            audioFile: "Bruno Mars - Just the Way You Are.mp3" 
+        };
+
+        /**
+         * ==========================================
+         * LOGIKA WEBSITE (JANGAN DIUBAH JIKA TIDAK PERLU)
+         * ==========================================
+         */
+
+        document.addEventListener('DOMContentLoaded', () => {
+            
+            // 1. Inisialisasi Konten dari CONFIG
+            document.getElementById('hero-title').innerText = CONFIG.hero.title;
+            document.getElementById('hero-subtitle').innerText = CONFIG.hero.subtitle;
+            document.getElementById('btn-open').innerText = CONFIG.hero.btnText;
+            
+            document.getElementById('letter-content').innerText = CONFIG.letter;
+            
+            document.getElementById('ending-title').innerText = CONFIG.ending.title;
+            document.getElementById('ending-subtitle').innerText = CONFIG.ending.subtitle;
+            document.getElementById('btn-surprise').innerText = CONFIG.ending.btnText;
+            document.getElementById('surprise-text').innerText = CONFIG.ending.surpriseText;
+
+            // Set audio source
+            const audioEl = document.getElementById('bg-music');
+            audioEl.src = CONFIG.audioFile;
+
+            // 2. Setup Gallery
+            const galleryContainer = document.getElementById('gallery-container');
+            CONFIG.gallery.forEach(photo => {
+                const polaroid = document.createElement('div');
+                polaroid.className = 'polaroid';
+                
+                // Fallback image handling
+                const img = document.createElement('img');
+                img.src = photo.src;
+                img.alt = photo.caption;
+                img.onerror = function() {
+                    this.onerror = null;
+                    this.outerHTML = `<div class="fallback-img">Foto Kita</div>`;
+                };
+
+                const caption = document.createElement('div');
+                caption.className = 'polaroid-caption';
+                caption.innerText = photo.caption;
+
+                polaroid.appendChild(img);
+                polaroid.appendChild(caption);
+
+                // Open modal on click
+                polaroid.addEventListener('click', () => {
+                    document.getElementById('photo-modal-img').src = photo.src;
+                    openModal('modal-photo');
+                });
+
+                galleryContainer.appendChild(polaroid);
+            });
+
+            // 3. Audio Control
+            let isPlaying = false;
+            const audioToggle = document.getElementById('audio-toggle');
+            const audioText = document.getElementById('audio-text');
+            const audioIcon = document.getElementById('audio-icon');
+
+            audioToggle.addEventListener('click', () => {
+                if (isPlaying) {
+                    audioEl.pause();
+                    audioText.innerText = "Mainkan musyiik";
+                    audioIcon.innerText = "🎵";
+                } else {
+                    audioEl.play().catch(e => console.log("Autoplay dicegah browser", e));
+                    audioText.innerText = "Pause Music";
+                    audioIcon.innerText = "⏸️";
+                }
+                isPlaying = !isPlaying;
+            });
+
+            // 4. Background Floating Elements (Hearts & Sparkles)
+            const bgContainer = document.getElementById('background-elements');
+            const symbols = ['💕', '✨', '🤍', '💖'];
+            
+            function createFloatingItem() {
+                const item = document.createElement('div');
+                item.className = 'floating-item';
+                item.innerText = symbols[Math.floor(Math.random() * symbols.length)];
+                
+                // Random position and size
+                item.style.left = Math.random() * 100 + 'vw';
+                const duration = Math.random() * 10 + 10; // 10s to 20s
+                item.style.animationDuration = duration + 's';
+                item.style.fontSize = (Math.random() * 15 + 10) + 'px'; // 10px to 25px
+                
+                bgContainer.appendChild(item);
+
+                // Remove after animation completes
+                setTimeout(() => {
+                    item.remove();
+                }, duration * 1000);
+            }
+            
+            // Create initial items
+            for(let i=0; i<15; i++) {
+                setTimeout(createFloatingItem, Math.random() * 5000);
+            }
+            // Continue creating items
+            setInterval(createFloatingItem, 2000);
+
+            // 5. Scroll Animation & Typewriter Trigger
+            const sections = document.querySelectorAll('section');
+            let hasTyped = false;
+
+            const observer = new IntersectionObserver((entries) => {
+                entries.forEach(entry => {
+                    if (entry.isIntersecting) {
+                        entry.target.classList.add('visible');
+                        
+                        // Trigger typewriter when message section is visible
+                        if (entry.target.id === 'message' && !hasTyped) {
+                            hasTyped = true;
+                            typeWriter(CONFIG.message, 'message-text', 50);
+                        }
+                    }
+                });
+            }, { threshold: 0.3 });
+
+            sections.forEach(section => {
+                observer.observe(section);
+            });
+
+            // Typewriter Function
+            function typeWriter(text, elementId, speed) {
+                let i = 0;
+                const element = document.getElementById(elementId);
+                const scrollHint = document.getElementById('scroll-hint');
+                element.innerHTML = '';
+                scrollHint.classList.remove('show');
+                
+                function type() {
+                    if (i < text.length) {
+                        element.innerHTML += text.charAt(i);
+                        i++;
+                        setTimeout(type, speed);
+                    } else {
+                        scrollHint.classList.add('show');
+                    }
+                }
+                type();
+            }
+
+            // 6. Button Actions
+            document.getElementById('btn-open').addEventListener('click', (e) => {
+                e.preventDefault();
+                // Simple Confetti
+                confetti({
+                    particleCount: 100,
+                    spread: 70,
+                    origin: { y: 0.6 },
+                    colors: ['#ffb6c1', '#fffdd0', '#ffffff', '#d4af37']
+                });
+                
+                // Scroll to message
+                document.getElementById('message').scrollIntoView({ behavior: 'smooth' });
+                
+                // Auto play music on first interaction (if not playing)
+                if (!isPlaying) {
+                    audioToggle.click();
+                }
+            });
+
+            document.getElementById('btn-letter').addEventListener('click', () => {
+                openModal('modal-letter');
+            });
+
+            document.getElementById('btn-surprise').addEventListener('click', () => {
+                // Massive Confetti Burst
+                var duration = 3 * 1000;
+                var animationEnd = Date.now() + duration;
+                var defaults = { startVelocity: 30, spread: 360, ticks: 60, zIndex: 0 };
+
+                function randomInRange(min, max) {
+                    return Math.random() * (max - min) + min;
+                }
+
+                var interval = setInterval(function() {
+                    var timeLeft = animationEnd - Date.now();
+
+                    if (timeLeft <= 0) {
+                        return clearInterval(interval);
+                    }
+
+                    var particleCount = 50 * (timeLeft / duration);
+                    confetti(Object.assign({}, defaults, { particleCount, origin: { x: randomInRange(0.1, 0.3), y: Math.random() - 0.2 } }));
+                    confetti(Object.assign({}, defaults, { particleCount, origin: { x: randomInRange(0.7, 0.9), y: Math.random() - 0.2 } }));
+                }, 250);
+
+                // Show Text
+                document.getElementById('surprise-text').style.display = 'block';
+                document.getElementById('btn-surprise').style.display = 'none';
+            });
+
+            // 7. Modal Logic
+            function openModal(id) {
+                document.getElementById(id).classList.add('show');
+            }
+
+            function closeModal(id) {
+                document.getElementById(id).classList.remove('show');
+            }
+
+            // Close buttons
+            document.querySelectorAll('.close-btn').forEach(btn => {
+                btn.addEventListener('click', (e) => {
+                    const modal = e.target.closest('.modal');
+                    modal.classList.remove('show');
+                });
+            });
+
+            // Close on outside click
+            window.addEventListener('click', (e) => {
+                if (e.target.classList.contains('modal')) {
+                    e.target.classList.remove('show');
+                }
+            });
+
+        });
+    </script>
+</body>
+</html>
